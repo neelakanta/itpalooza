@@ -1,0 +1,61 @@
+<html>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+  // Create a client instance
+  client = new Paho.MQTT.Client("m13.cloudmqtt.com", 32293,"itpalooza_qa_" + parseInt(Math.random() * 100, 10)); 
+
+  // set callback handlers
+  client.onConnectionLost = onConnectionLost;
+  client.onMessageArrived = onMessageArrived;
+  var options = {
+    useSSL: true,
+    userName: "apjuklor",
+    password: "1j97IGv9lm09",
+    onSuccess:onConnect,
+    onFailure:doFail
+  }
+
+  // connect the client
+  client.connect(options);
+
+  // called when the client connects
+  function onConnect() {
+    // Once a connection has been made, make a subscription and send a message.
+    console.log("onConnect");
+    client.subscribe("qa");
+    message = new Paho.MQTT.Message("Hello CloudMQTT");
+    message.destinationName = "qa";
+    client.send(message); 
+  }
+
+  function doFail(e){
+    console.log(e);
+  }
+
+  // called when the client loses its connection
+  function onConnectionLost(responseObject) {
+    if (responseObject.errorCode !== 0) {
+      console.log("onConnectionLost:"+responseObject.errorMessage);
+    }
+  }
+
+  // called when a message arrives
+  function onMessageArrived(message) {
+    console.log("onMessageArrived:"+message.payloadString);
+  }
+
+  function postQuestion(question) {
+    message = new Paho.MQTT.Message(question);
+    message.destinationName = "qa";
+    client.send(message); 
+  }
+</script>
+
+<textarea id="question" rows="4" cols="30"> </textarea>
+<br>
+<input type="button" value="Ask" onclick="postQuestion(document.getElementById('question').value);" />
+
+</body>
+</html>

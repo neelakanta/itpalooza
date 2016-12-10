@@ -1,0 +1,129 @@
+extends layout
+
+block signout
+  a.logoutLblPos(href="/logout") Use a different API key and Auth Token
+block content 
+
+  link(rel='stylesheet', href='css/rickshaw/rickshaw.min.css')
+
+  link(rel='stylesheet', href='css/dashboard.css')
+  link(rel='stylesheet', href='css/extensions.css?v=2')
+  link(rel='stylesheet', href='http://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css')
+  link(rel='stylesheet', href='css/jquery.datetimepicker.css')
+
+  script(type='text/javascript', src='js/d3/d3.v3.js')
+  script(type='text/javascript', src='js/rickshaw/rickshaw.min.js')
+  script(type='text/javascript', src='http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js')
+  script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js')
+  script(type='text/javascript', src='js/jquery.datetimepicker.min.js')
+  script(type='text/javascript',src='js/rickshaw/extensions.js')
+  
+  script
+    |$(function() {
+    |$( "#historicStarts" ).datetimepicker({ onShow:function( ct ){
+    |     this.setOptions({ maxDate: new Date() })
+    | }});
+    |$( "#historicEnds" ).datetimepicker({ maxDate: new Date()});
+    |$( "#historicTopRange").spinner({min : 0, max : 100, step : 1})
+    |.on('input', function () {
+    |var val = this.value,
+    |$this = $(this),
+    |max = $this.spinner('option', 'max'),
+    |min = $this.spinner('option', 'min');
+    |if (!val.match(/^\d+$/)) 
+    |val = 0;
+    |this.value = val > max ? max : val < min ? min : val;
+    |});
+    |$( "#historicTopRange").spinner("value",10); // set the default to 100
+    |});
+
+  h2.iottext
+  #content
+  form#side_panel.iotsidepanel
+    div.devices
+      h1.devicesText Device:
+      select.devicesSelect#deviceslist
+        option(value='') Select a device
+    h1.iottext Data
+    section
+      #visualtype
+        input#realtime(type='radio', value='realtime', name='visualtype', checked="")
+        label.iotlabel(for="realtime") Live Data
+        input#historic(type='radio', value='historic', name='visualtype')
+        label.iotlabel(for="historic") Historic Data
+
+        #historicData(hidden)
+          section
+            input#historicRecentEvents(type='radio', value='topEvents', name='historicQuery', checked="")
+            label.iotlabel(for="historicRecentEvents") Most Recent
+            input.spinner#historicTopRange
+            label.iottext(for="historicTopRange") Events
+            input#historicDateRange(type='radio', value='dateRange', name='historicQuery')
+            label.iotlabel(for="historicRecentEvents") Time Range
+            //label.iotlabelleft(for="historicStarts") Starts
+            input.histdate#historicStarts(type='text', placeholder='Starts')
+            //label.iotlabelleft(for="historicEnds") Ends
+            input.histdate#historicEnds(type='text', placeholder='Ends')
+            br
+            br
+
+    h1.iottext Sensors
+    section
+      #legend
+    h1.iottext Chart Type
+    section
+      #renderer_form.toggler
+        input#area(type="radio", name="renderer", value="area")
+        label(for="area") area
+        input#bar(type="radio", name="renderer", value="bar")
+        label(for="bar") bar
+        input#line(type="radio", name="renderer", value="line", checked="")
+        label(for="line") line
+        input#scatter(type="radio", name="renderer", value="scatterplot")
+        label(for="scatter") scatter
+    h1.iottext Customize
+    section
+      #offset_form.iotoptionpanel
+        label(for="stack")
+          input#stack(type="radio", name="offset", value="zero")
+          span stack
+        label(for="stream")
+          input#stream(type="radio", name="offset", value="wiggle")
+          span stream
+        label(for="pct")
+          input#pct(type="radio", name="offset", value="expand")
+          span pct
+        label(for="value")
+          input#value(type="radio", name="offset", value="value", checked="")
+          span value
+      #interpolation_form.iotoptionpanel
+        label(for="cardinal")
+          input#cardinal(type="radio", name="interpolation", value="cardinal", checked="")
+          span cardinal
+        label(for="linear")
+          input#linear(type="radio", name="interpolation", value="linear")
+          span linear
+        label(for="step")
+          input#step(type="radio", name="interpolation", value="step-after")
+          span step
+        label(for="hidd")
+          input#hidd(type="radio", name="interpolation", value="", hidden="true")
+          span
+      
+    
+  #chart_container
+    #chart
+      .iotdashboardtext All devices currently in your organization are available in the Devices Dropdown.
+      br
+      .iotdashboardtext Select one to start visualizing device data.
+      img.iotimages(src='images/quickstartThing.svg', alt='Thing',align="middle")
+      img.iotimages(src='images/quickstartChart.svg', alt='Chart',align="middle")
+    #timeline
+    #preview
+  
+  script(type='text/javascript', src='js/realtime/mqttws31.js')
+  script(type='text/javascript', src='js/realtime/realtime.js')
+  script(type='text/javascript', src='js/realtime/realtimeGraph.js')
+  script(type='text/javascript', src='js/historian/historian.js')
+  script(type='text/javascript', src='js/historian/historianGraph.js')
+  script(type='text/javascript', src='js/uicontroller.js')
